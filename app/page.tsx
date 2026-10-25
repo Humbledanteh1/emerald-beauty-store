@@ -15,6 +15,13 @@ const products: Product[] = [
   { id: 8, name: "Overnight Repair Cream", brand: "SOFT THEORY", price: 44, category: "Skincare", image: "https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?auto=format&fit=crop&w=900&q=85", tag: "NIGHT CARE" },
 ];
 const categories = ["All", "Skincare", "Makeup", "Haircare", "Bodycare"];
+function easeInOutCubic(x: number): number {
+  const progress = Math.max(0, Math.min(1, x));
+  return progress < 0.5
+    ? 4 * progress * progress * progress
+    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+}
+
 const money = (amount: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount);
 
 export default function Home() {
@@ -60,9 +67,11 @@ export default function Home() {
             const box = event.currentTarget.getBoundingClientRect();
             const dx = event.clientX - (box.left + box.width / 2);
             const dy = event.clientY - (box.top + box.height / 2);
-            if (Math.hypot(dx, dy) < 230) {
-              event.currentTarget.style.setProperty("--bubble-x", `${-dx / 18}px`);
-              event.currentTarget.style.setProperty("--bubble-y", `${-dy / 18}px`);
+            const distance = Math.hypot(dx, dy);
+            if (distance < 230) {
+              const intensity = easeInOutCubic(1 - distance / 230);
+              event.currentTarget.style.setProperty("--bubble-x", `${(-dx / 18) * intensity}px`);
+              event.currentTarget.style.setProperty("--bubble-y", `${(-dy / 18) * intensity}px`);
             }
           }} onPointerLeave={(event) => {
             event.currentTarget.style.setProperty("--bubble-x", "0px");
