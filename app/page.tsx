@@ -86,7 +86,7 @@ export default function Home() {
   const filtered = useMemo(() => products.filter(p => (filter === "All" || p.category === filter) && (p.name + p.brand + p.category).toLowerCase().includes(search.toLowerCase())), [filter, search]);
   const count = Object.values(cart).reduce((a, b) => a + b, 0);
   const total = products.reduce((sum, p) => sum + p.price * (cart[p.id] || 0), 0);
-  const add = (id: number) => { setCart(prev => ({ ...prev, [id]: (prev[id] || 0) + 1 })); setToast("Added to your bag"); window.setTimeout(() => setToast(""), 2200); };
+  const add = (id: number) => { setCart((prev) => { return { ...prev, [id]: (prev[id] ?? 0) + 1 }; }); setToast("Added to your bag"); window.setTimeout(() => setToast(""), 2200); };
   const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
   const scrollToProducts = (category?: string) => { if (category) setFilter(category); document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); };
   return <>
