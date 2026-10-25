@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Heart, Search, ShoppingBag, Menu, X, ArrowRight, Leaf, Star } from "lucide-react";
 
 type Product = { id: number; name: string; brand: string; price: number; category: string; image: string; tag: string };
@@ -8,7 +8,7 @@ const products: Product[] = [
   { id: 1, name: "Dew Drops Hydrating Serum", brand: "ÉCLAT BOTANICALS", price: 38, category: "Skincare", image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=900&q=85", tag: "BESTSELLER" },
   { id: 2, name: "Cloud Nine Moisturizer", brand: "SOFT THEORY", price: 32, category: "Skincare", image: "https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&w=900&q=85", tag: "LOVED" },
   { id: 3, name: "Nourish Hair Elixir", brand: "ROOT & RITUAL", price: 26, category: "Haircare", image: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=900&q=85", tag: "CLEAN BEAUTY" },
-  { id: 4, name: "Sculpt & Glow Tint", brand: "FORME STUDIO", price: 29, category: "Makeup", image: "https://images.unsplash.com/photo-1631214540242-9a5e3e2e4c5f?auto=format&fit=crop&w=900&q=85", tag: "NEW" },
+  { id: 4, name: "Sculpt & Glow Tint", brand: "FORME STUDIO", price: 29, category: "Makeup", image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=900&q=85", tag: "NEW" },
   { id: 5, name: "Rosewater Reset Mist", brand: "ÉCLAT BOTANICALS", price: 21, category: "Skincare", image: "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=900&q=85", tag: "DAILY RITUAL" },
   { id: 6, name: "Silk Finish Lip Oil", brand: "FORME STUDIO", price: 18, category: "Makeup", image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=900&q=85", tag: "STAFF PICK" },
   { id: 7, name: "Body Polish Ritual", brand: "ROOT & RITUAL", price: 24, category: "Bodycare", image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=900&q=85", tag: "SPA AT HOME" },
@@ -37,6 +37,45 @@ export default function Home() {
   const total = products.reduce((sum, p) => sum + p.price * (cart[p.id] || 0), 0);
   const add = (id: number) => setCart((previous) => ({ ...previous, [id]: (previous[id] || 0) + 1 }));
   const toggleFavorite = (id: number) => setFavorites((previous) => previous.includes(id) ? previous.filter((item) => item !== id) : [...previous, id]);
+
+  useEffect(() => {
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>(".reveal-on-scroll"));
+    if (!("IntersectionObserver" in window)) {
+      nodes.forEach((node) => node.classList.add("is-visible"));
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -35px 0px" });
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, [filter, search]);
+
+  useEffect(() => {
+    let frame = 0;
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        document.documentElement.style.setProperty("--scroll-progress", String(
+          window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight)
+        ));
+        frame = 0;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+
 
   return (
     <main className="storefront-root">
@@ -85,21 +124,21 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="container category-section" id="categories">
+      <section className="container category-section reveal-on-scroll" id="categories">
         <div className="section-heading"><div><p className="eyebrow">FIND YOUR FEEL-GOOD</p><h2>A little ritual for <em>every you.</em></h2></div></div>
         <div className="category-pills">{categories.map((category) => <button key={category} className={filter === category ? "category-pill active" : "category-pill"} onClick={() => { setFilter(category); document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" }); }}>{category}</button>)}</div>
       </section>
-      <section className="container products-section" id="shop">
+      <section className="container products-section reveal-on-scroll" id="shop">
         <div className="section-heading"><div><p className="eyebrow">THE GOOD STUFF</p><h2>Meet your new <em>favorites.</em></h2></div><span className="product-count">{filtered.length} products</span></div>
         <div className="product-grid">
-          {filtered.map((product) => <article className="product-card" key={product.id}>
-            <div className="product-image-wrap"><img className="product-image" src={product.image} alt={product.name} loading={product.id > 4 ? "lazy" : "eager"} onError={(event) => { const img = event.currentTarget; img.onerror = null; img.src = "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=900&q=85"; img.style.objectPosition = "center"; }} /><span className="product-tag">{product.tag}</span><button className={favorites.includes(product.id) ? "favorite-button favorited" : "favorite-button"} aria-label="Toggle favorite" onClick={() => toggleFavorite(product.id)}><Heart size={18} fill={favorites.includes(product.id) ? "currentColor" : "none"} /></button><button className="quick-add" onClick={() => add(product.id)}>Add to bag <span>+</span></button></div>
+          {filtered.map((product) => <article className="product-card reveal-on-scroll" key={product.id}>
+            <div className="product-image-wrap"><img className="product-image" src={product.image} alt={product.name} loading={product.id > 4 ? "lazy" : "eager"} onError={(event) => { const img = event.currentTarget; img.onerror = null; img.src = "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=900&q=85"; img.style.objectPosition = "center"; img.closest(".product-image-wrap")?.classList.add("image-fallback"); }} /><span className="product-tag">{product.tag}</span><button className={favorites.includes(product.id) ? "favorite-button favorited" : "favorite-button"} aria-label="Toggle favorite" onClick={() => toggleFavorite(product.id)}><Heart size={18} fill={favorites.includes(product.id) ? "currentColor" : "none"} /></button><button className="quick-add" onClick={() => add(product.id)}>Add to bag <span>+</span></button></div>
             <div className="product-info"><p className="product-brand">{product.brand}</p><h3>{product.name}</h3><div className="product-bottom"><span>{money(product.price)}</span><span className="rating"><Star size={13} fill="currentColor" /> 4.9</span></div></div>
           </article>)}
         </div>
         {filtered.length === 0 && <p className="empty-state">No products found. Try another search.</p>}
       </section>
-      <section className="story-section" id="story"><div className="container story-inner"><p className="eyebrow"><Leaf size={15} /> A SOFTER KIND OF BEAUTY</p><h2>Good ingredients.<br /><em>Good intentions.</em></h2><p>Beauty should feel like care, not a chore. We bring together thoughtful essentials for the little rituals that make you feel more like yourself.</p><a href="#shop" className="text-link">Find your ritual <ArrowRight size={16} /></a></div></section>
+      <section className="story-section reveal-on-scroll" id="story"><div className="container story-inner"><p className="eyebrow"><Leaf size={15} /> A SOFTER KIND OF BEAUTY</p><h2>Good ingredients.<br /><em>Good intentions.</em></h2><p>Beauty should feel like care, not a chore. We bring together thoughtful essentials for the little rituals that make you feel more like yourself.</p><a href="#shop" className="text-link">Find your ritual <ArrowRight size={16} /></a></div></section>
       <footer className="footer"><div className="container footer-inner"><a className="logo" href="#">emerald<span>.</span></a><p>Thoughtful beauty for everyday rituals.</p><span>© {new Date().getFullYear()} Emerald Beauty. Prices in USD.</span></div></footer>
       {cartOpen && <div className="cart-backdrop" onClick={() => setCartOpen(false)}><aside className="cart-drawer" onClick={(event) => event.stopPropagation()}><div className="cart-header"><h2>Your bag ({count})</h2><button className="icon-button" onClick={() => setCartOpen(false)} aria-label="Close bag"><X size={20} /></button></div>{count === 0 ? <p className="empty-state">Your bag is waiting for something lovely.</p> : <><div className="cart-items">{products.filter((p) => cart[p.id]).map((p) => <div className="cart-item" key={p.id}><img src={p.image} alt="" onError={(event) => { const img = event.currentTarget; img.onerror = null; img.src = "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=300&q=80"; }} /><div><strong>{p.name}</strong><p>{money(p.price)} × {cart[p.id]}</p><button onClick={() => setCart((previous) => ({ ...previous, [p.id]: Math.max(0, (previous[p.id] || 0) - 1) }))}>Remove one</button></div></div>)}</div><div className="cart-total"><span>Subtotal</span><strong>{money(total)}</strong></div><p className="checkout-note">Checkout will be enabled when payment setup is added.</p></>}</aside></div>}
     </main>
