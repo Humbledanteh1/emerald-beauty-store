@@ -191,3 +191,14 @@ body { font-family: 'DM Sans', sans-serif; }
 @media (max-width:620px) { .hero {min-height:calc(100svh - 64px);} .hero-content {min-height:inherit;padding-top:36px;padding-bottom:36px;} .liquid-bubble {width:100%;padding:26px 22px;border-radius:30px;} .hero h1 {font-size:clamp(3rem,15vw,5rem);letter-spacing:-.075em;} .flower-orb {width:270px;right:-130px;top:30%;opacity:.35;} .flower-stem,.flower-leaf {opacity:.25;} .flower-caption {font-size:8px;right:12px;bottom:12px;} .product-card {border-radius:16px;} .product-info {padding:0 10px 13px;} }
 @keyframes petal-colors { 0%,100% {filter:hue-rotate(0deg)} 50% {filter:hue-rotate(135deg)} }
 @media (prefers-reduced-motion:reduce) { .flower-orb,.flower-stem,.flower-leaf,.liquid-bubble,.product-card {animation:none!important;transition:none!important;} }
+
+/* Motion restoration: the final cascade intentionally overrides legacy static rules. */
+.product-card { animation: card-rise .8s cubic-bezier(.2,.7,.2,1) both !important; transition: transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s,border-color .3s !important; }
+.product-card:nth-child(2){animation-delay:.08s!important}.product-card:nth-child(3){animation-delay:.16s!important}.product-card:nth-child(4){animation-delay:.24s!important}.product-card:nth-child(5){animation-delay:.32s!important}.product-card:nth-child(6){animation-delay:.4s!important}.product-card:nth-child(7){animation-delay:.48s!important}.product-card:nth-child(8){animation-delay:.56s!important}
+.product-image-wrap { height:clamp(190px,27vw,330px); background:radial-gradient(circle at 30% 20%,#fff,#e4eee5 55%,#cadccf); overflow:hidden; position:relative; }
+.product-image-wrap > .product-image { display:block; width:100%; height:100%; object-fit:cover; transition:transform .75s cubic-bezier(.2,.8,.2,1),filter .4s; }
+.product-card:hover .product-image-wrap > .product-image { transform:scale(1.07); filter:saturate(1.12) contrast(1.02); }
+.product-image-wrap .quick-add { z-index:2; }
+.product-card { opacity:1; }
+@media (max-width:620px) { .product-image-wrap {height:clamp(145px,47vw,230px);} .product-grid {gap:20px 10px;} .product-info h3 {font-size:clamp(13px,3.7vw,16px);line-height:1.25;} .product-brand {font-size:9px;letter-spacing:.04em;} }
+@media (prefers-reduced-motion:reduce) { .product-card {animation:none!important;transition:none!important;} .product-card:hover {transform:none!important;} .flower-orb,.flower-stem,.flower-leaf,.liquid-bubble {animation:none!important;transition:none!important;} }
