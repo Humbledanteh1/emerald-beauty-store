@@ -83,12 +83,36 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [favorites, setFavorites] = useState<number[]>([]);
-  const filtered = useMemo(() => products.filter(p => (filter === "All" || p.category === filter) && (p.name + p.brand + p.category).toLowerCase().includes(search.toLowerCase())), [filter, search]);
-  const count = Object.values(cart).reduce((a, b) => a + b, 0);
-  const total = products.reduce((sum, p) => sum + p.price * (cart[p.id] || 0), 0);
-  const add = (id: number) => { setCart((prev) => { return { ...prev, [id]: (prev[id] ?? 0) + 1 }; }); setToast("Added to your bag"); window.setTimeout(() => setToast(""), 2200); };
-  const money = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
-  const scrollToProducts = (category?: string) => { if (category) setFilter(category); document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); };
+  const filtered = useMemo(
+    () =>
+      products.filter((product) => {
+        const matchesCategory = filter === "All" || product.category === filter;
+        const searchableText = (product.name + product.brand + product.category).toLowerCase();
+        return matchesCategory && searchableText.includes(search.toLowerCase());
+      }),
+    [filter, search]
+  );
+  const count = Object.values(cart).reduce((sum, quantity) => sum + quantity, 0);
+  const total = products.reduce((sum, product) => sum + product.price * (cart[product.id] || 0), 0);
+  const add = (id: number) => {
+    setCart((previousCart) => {
+      const currentQuantity = previousCart[id] || 0;
+      return { ...previousCart, [id]: currentQuantity + 1 };
+    });
+    setToast("Added to your bag");
+    window.setTimeout(() => setToast(""), 2200);
+  };
+  const money = (amount: number) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(amount);
+  const scrollToProducts = (category?: string) => {
+    if (category) setFilter(category);
+    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
+    setMenuOpen(false);
+  };
   return <>
     <div className="announcement">A little something extra — complimentary shipping on orders over $75</div>
     <header className="header">
