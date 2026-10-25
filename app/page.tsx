@@ -48,13 +48,32 @@ export default function Home() {
         {searchOpen && <div className="container search-row"><input aria-label="Search products" placeholder="Search your next favorite..." value={search} onChange={(event) => setSearch(event.target.value)} /></div>}
       </header>
       <section className="hero">
-        <div className="hero-canvas-fallback" />
+        <div className="hero-canvas-fallback" aria-hidden="true" />
+        <div className="flower-world" aria-hidden="true">
+          <div className="flower-orb"><i /><i /><i /><i /><i /><i /><i /><i /><b /></div>
+          <div className="flower-stem" /><div className="flower-leaf leaf-one" /><div className="flower-leaf leaf-two" />
+          <span className="flower-caption">BOTANICAL / IN MOTION</span>
+        </div>
         <div className="container hero-content">
-          <p className="eyebrow"><Leaf size={15} /> BOTANICAL BEAUTY, THOUGHTFULLY CHOSEN</p>
-          <h1>Your glow,<br /><em>your ritual.</em></h1>
-          <p className="hero-copy">Discover feel-good skincare, makeup and self-care essentials made for the beauty of being you.</p>
-          <a className="button button-dark" href="#shop">Explore the collection <ArrowRight size={17} /></a>
-          <div className="hero-note"><span>✳</span> GOOD-FOR-YOU BEAUTY, EVERY DAY</div>
+          <div className="liquid-bubble" onPointerMove={(event) => {
+            if (event.pointerType === "touch") return;
+            const box = event.currentTarget.getBoundingClientRect();
+            const dx = event.clientX - (box.left + box.width / 2);
+            const dy = event.clientY - (box.top + box.height / 2);
+            if (Math.hypot(dx, dy) < 230) {
+              event.currentTarget.style.setProperty("--bubble-x", `${-dx / 18}px`);
+              event.currentTarget.style.setProperty("--bubble-y", `${-dy / 18}px`);
+            }
+          }} onPointerLeave={(event) => {
+            event.currentTarget.style.setProperty("--bubble-x", "0px");
+            event.currentTarget.style.setProperty("--bubble-y", "0px");
+          }}>
+            <p className="eyebrow"><Leaf size={15} /> BOTANICAL BEAUTY, THOUGHTFULLY CHOSEN</p>
+            <h1>Your glow.<br /><em>Your rules.</em></h1>
+            <p className="hero-copy">A living edit of skincare, color and self-care. Less noise. Better rituals. Beauty with a pulse.</p>
+            <a className="button button-dark" href="#shop">Enter the ritual <ArrowRight size={17} /></a>
+            <div className="hero-note"><span>✳</span> GOOD-FOR-YOU BEAUTY, EVERY DAY</div>
+          </div>
         </div>
       </section>
       <section className="container category-section" id="categories">
