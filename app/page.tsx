@@ -123,6 +123,7 @@ export default function Home() {
             <div className="hero-note"><span>✳</span> GOOD-FOR-YOU BEAUTY, EVERY DAY</div>
           </div>
         </div>
+      </section>
       <section className="container category-section reveal-on-scroll" id="categories">
         <div className="section-heading"><div><p className="eyebrow">FIND YOUR FEEL-GOOD</p><h2>A little ritual for <em>every you.</em></h2></div></div>
         <div className="category-pills">{categories.map((category) => <button key={category} className={filter === category ? "category-pill active" : "category-pill"} onClick={() => { setFilter(category); document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" }); }}>{category}</button>)}</div>
