@@ -251,3 +251,58 @@ html::before { content:""; position:fixed; z-index:100; left:0; top:0; height:3p
   .reveal-on-scroll,.product-card,.liquid-bubble::before,.flower-orb,.flower-orb i,.flower-orb b,.flower-stem,.flower-leaf { animation:none!important; transition:none!important; }
   .reveal-on-scroll { opacity:1; transform:none; }
 }
+
+/* Fine-tuned hero: keep the CTA fully visible and make the liquid glass unmistakable. */
+.liquid-bubble {
+  width:min(690px,100%);
+  box-sizing:border-box;
+  padding:clamp(28px,4.2vw,58px);
+  background:linear-gradient(135deg,rgba(245,255,250,.27),rgba(123,236,190,.16) 46%,rgba(221,250,255,.19));
+  border:1px solid rgba(238,255,246,.62);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.62),inset 0 -18px 45px rgba(110,237,190,.08),0 24px 90px rgba(0,25,18,.26),0 0 0 1px rgba(255,255,255,.06);
+  backdrop-filter:blur(28px) saturate(175%);
+  -webkit-backdrop-filter:blur(28px) saturate(175%);
+}
+.liquid-bubble > * { position:relative; z-index:1; }
+.hero .button-dark {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  width:max-content;
+  max-width:100%;
+  min-height:52px;
+  padding:15px 24px;
+  line-height:1.25;
+  white-space:normal;
+  flex-wrap:nowrap;
+  box-sizing:border-box;
+  overflow:visible;
+  position:relative;
+  z-index:3;
+  box-shadow:0 10px 30px rgba(2,45,33,.18),inset 0 1px 0 rgba(255,255,255,.7);
+}
+.hero .button-dark svg { flex:0 0 auto; }
+.hero-content { overflow:visible; }
+.flower-orb {
+  animation:flower-drift 14s ease-in-out infinite !important;
+  transform-origin:50% 50%;
+}
+.flower-orb i {
+  rotate:0deg;
+  animation:petal-morph 8s ease-in-out infinite alternate,petal-colors 13s ease-in-out infinite,petal-spin 24s linear infinite;
+  transform-origin:50% 88%;
+}
+.flower-orb i:nth-child(2n) { animation-delay:-2s,-4s,-12s; }
+.flower-orb b { animation:core-pulse 5s ease-in-out infinite alternate; }
+@keyframes petal-spin { from { rotate:0deg; } to { rotate:360deg; } }
+@media (max-width:620px) {
+  .liquid-bubble { width:100%; padding:28px 22px; border-radius:28px; }
+  .hero .button-dark { min-height:50px; padding:14px 19px; font-size:14px; }
+  .hero h1 { overflow-wrap:normal; }
+}
+/* Respect reduced-motion preferences without affecting the layout. */
+@media (prefers-reduced-motion:reduce) {
+  .flower-orb { animation:none!important; }
+  .flower-orb i { animation:none!important; }
+}
