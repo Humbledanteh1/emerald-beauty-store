@@ -123,16 +123,6 @@ export default function Home() {
             <div className="hero-note"><span>✳</span> GOOD-FOR-YOU BEAUTY, EVERY DAY</div>
           </div>
         </div>
-        <div className="ritual-rail" aria-label="Featured Emerald beauty rituals">
-          <div className="ritual-track">
-            {[...products, ...products].map((product, index) => <a className={`ritual-tile ritual-tile-${index % 8}`} href="#shop" key={`${product.id}-${index}`} aria-label={`Explore ${product.name}`}>
-              <img src={product.image} alt="" loading="lazy" />
-              <span className="ritual-play" aria-hidden="true">↗</span>
-              <span className="ritual-label"><small>{product.brand}</small><strong>{product.name}</strong><b>{money(product.price)}</b></span>
-            </a>)}
-          </div>
-        </div>
-      </section>
       <section className="container category-section reveal-on-scroll" id="categories">
         <div className="section-heading"><div><p className="eyebrow">FIND YOUR FEEL-GOOD</p><h2>A little ritual for <em>every you.</em></h2></div></div>
         <div className="category-pills">{categories.map((category) => <button key={category} className={filter === category ? "category-pill active" : "category-pill"} onClick={() => { setFilter(category); document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" }); }}>{category}</button>)}</div>
